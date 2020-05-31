@@ -1,15 +1,23 @@
 import discord
+import os
 from time import sleep
+from datetime import datetime
 
-token="NzA2NDY0MzUyMTUyMTkxMDA3.Xq6oUQ.tk12kQXRqP_xfQ3JSs5J189lyas"
+token=os.environ["DISCORD_TOKEN"]
 
 client = discord.Client()
 
-async def play_despacito(message):
+audio_dict = {
+    "despacito" : "Alexa_D.m4a",
+    "jerk" : "jerk.webm"
+}
+
+async def play_audio(message, audio_name):
+    print(f"{datetime.now().strftime('%d-%b-%Y (%H:%M:%S.%f)')}\t{audio_name}")
     for vc in message.guild.voice_channels:
         if message.author in vc.members:
             vcClient = await vc.connect()
-            opus_audio = await discord.FFmpegOpusAudio.from_probe("Alexa_D.m4a")
+            opus_audio = await discord.FFmpegOpusAudio.from_probe(audio_dict[audio_name])
             vcClient.play(opus_audio)
             while vcClient.is_playing():
                 sleep(0.5)
@@ -26,24 +34,11 @@ async def on_ready():
 async def on_message(message):
     if message.author == client.user:
         return
-
     if client.user.id in message.raw_mentions:
-        await play_despacito(message)
+        await play_audio(message, "despacito")
     elif "this is so sad" in message.content.lower():
-        await play_despacito(message)
-    '''
-    # loose sad matching
-    elif "sad" in map(lambda x: x.lower(), message.content.split()):
-        for vc in message.guild.voice_channels:
-            if message.author in vc.members:
-                vcClient = await vc.connect()
-                opus_audio = await discord.FFmpegOpusAudio.from_probe("Alexa_D.m4a")
-                vcClient.play(opus_audio)
-                while vcClient.is_playing():
-                    sleep(0.5)
-                await vcClient.disconnect()
-                return
-        return
-    '''
+        await play_audio(message, "despacito")
+    elif "oink oink" in message.content.lower():
+        await play_audio(message, "jerk")
 
 client.run(token)

@@ -9,4 +9,4 @@ RUN apt-get update && apt-get install -y ffmpeg
 
 COPY . .
 
-CMD [ "python", "./app.py" ]
+CMD [ "python", "-u", "./app.py" ]
